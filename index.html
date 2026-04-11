@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LMP2 Coach</title>
+  <meta name="theme-color" content="#0a0a0f"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0a0a0f;color:#e8e8f0;font-family:'Barlow Condensed',sans-serif;min-height:100vh;padding-bottom:80px}
+    .header{background:linear-gradient(135deg,#0a0a0f,#12121f);border-bottom:1px solid #ffffff15;padding:20px 16px 0;position:sticky;top:0;z-index:100}
+    .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+    .title{font-size:28px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#fff;line-height:1}
+    .subtitle{font-size:13px;color:#ff4d4d;letter-spacing:3px;text-transform:uppercase;margin-top:4px}
+    .badge{background:#ff4d4d;color:#fff;border-radius:12px;padding:6px 14px;font-size:14px;font-weight:700}
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+    .stat-card{background:#ffffff08;border-radius:12px;padding:10px;text-align:center;border:1px solid #ffffff10}
+    .stat-num{font-size:24px;font-weight:800;color:#ff4d4d;line-height:1}
+    .stat-label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+    .progress-bar{background:#ffffff10;border-radius:999px;height:8px;margin-bottom:16px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,#ff4d4d,#ff9f4d);border-radius:999px;transition:width 0.5s}
+    .progress-labels{display:flex;justify-content:space-between;font-size:10px;color:#555;margin-top:-12px;margin-bottom:12px}
+    .tabs{display:flex;border-bottom:1px solid #ffffff10}
+    .tab-btn{flex:1;padding:12px 0;text-align:center;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#666;border:none;border-bottom:2px solid transparent;cursor:pointer;background:none;font-family:'Barlow Condensed',sans-serif}
+    .tab-btn.active{color:#ff4d4d;border-bottom:2px solid #ff4d4d}
+    .content{padding:16px}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    /* TODAY */
+    .today-card{background:linear-gradient(135deg,#1a0a0a,#1a1a2a);border:1px solid #ff4d4d40;border-radius:16px;padding:20px;margin-bottom:16px}
+    .today-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+    .today-day-label{font-size:12px;color:#666;letter-spacing:2px;text-transform:uppercase}
+    .today-date-label{font-size:13px;color:#ff9f4d;font-weight:700;margin-top:2px}
+    .today-title{font-size:22px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+    .type-badge{border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;letter-spacing:1px;white-space:nowrap}
+    .type-MUSCU{background:#ff4d4d22;border:1px solid #ff4d4d;color:#ff4d4d}
+    .type-CARDIO{background:#4daaff22;border:1px solid #4daaff;color:#4daaff}
+    .type-HIIT{background:#ff9f4d22;border:1px solid #ff9f4d;color:#ff9f4d}
+    .type-RECUP{background:#4dff9f22;border:1px solid #4dff9f;color:#4dff9f}
+    .exercise-list{list-style:none;margin-bottom:16px}
+    .exercise-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #ffffff08;font-size:15px;cursor:pointer}
+    .exercise-item.done{color:#4dff9f;text-decoration:line-through;opacity:0.6}
+    .checkbox{width:22px;height:22px;border-radius:6px;border:2px solid #ffffff30;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+    .checkbox.done{border-color:#4dff9f;background:#4dff9f20;color:#4dff9f}
+    .done-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#ff4d4d,#ff2222);color:#fff;font-size:15px;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Barlow Condensed',sans-serif}
+    .done-btn.validated{background:#4dff9f20;color:#4dff9f;border:1px solid #4dff9f40}
+    .reminder-card{background:#ffffff05;border:1px solid #ffffff10;border-radius:12px;padding:14px;margin-bottom:16px}
+    .reminder-label{font-size:11px;color:#666;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+    .reminder-text{font-size:14px;color:#aaa;line-height:1.8}
+    /* ALERTE DEADLINE */
+    .alert-card{background:linear-gradient(135deg,#1a0a00,#1a1500);border:1px solid #ff9f4d60;border-radius:12px;padding:14px;margin-bottom:16px;text-align:center}
+    .alert-title{font-size:13px;color:#ff9f4d;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+    .alert-deadline{font-size:28px;font-weight:800;color:#ff9f4d}
+    .alert-sub{font-size:12px;color:#888;margin-top:4px}
+    /* PROGRAMME */
+    .section-title{font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#666;margin-bottom:12px}
+    .week-title{font-size:16px;font-weight:800;color:#ff9f4d;letter-spacing:1px;text-transform:uppercase;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid #ff9f4d30}
+    .day-card{background:#ffffff05;border:1px solid #ffffff10;border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer}
+    .day-card.done-day{background:#4dff9f08;border-color:#4dff9f30}
+    .day-card.today-day{background:#ff4d4d10;border-color:#ff4d4d40}
+    .day-card.future{opacity:0.6}
+    .day-row{display:flex;align-items:center;justify-content:space-between}
+    .day-left{display:flex;align-items:center;gap:10px}
+    .day-num{font-size:11px;color:#555;font-weight:700;width:28px}
+    .day-title-text{font-size:16px;font-weight:700}
+    .day-meta{font-size:11px;color:#666;margin-top:2px}
+    .today-tag{font-size:10px;background:#ff4d4d;color:#fff;border-radius:4px;padding:1px 6px;margin-left:6px}
+    .check-icon{width:24px;height:24px;border-radius:50%;background:#ffffff10;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+    .check-icon.done{background:#4dff9f;color:#000}
+    .day-exercises{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #ffffff10}
+    .day-exercises.open{display:block}
+    .mini-exercise{font-size:13px;color:#aaa;padding:5px 0;border-bottom:1px solid #ffffff05}
+    .validate-small{width:100%;margin-top:12px;padding:10px;border-radius:10px;border:none;background:linear-gradient(135deg,#ff4d4d,#ff2222);color:#fff;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'Barlow Condensed',sans-serif}
+    .validate-small.validated{background:#4dff9f20;color:#4dff9f;border:1px solid #4dff9f40}
+    /* POIDS */
+    .weight-input-row{display:flex;gap:8px;margin-bottom:16px}
+    .weight-input{flex:1;background:#ffffff08;border:1px solid #ffffff20;border-radius:10px;padding:12px 14px;color:#fff;font-size:16px;font-family:'Barlow Condensed',sans-serif;outline:none}
+    .add-btn{background:linear-gradient(135deg,#ff4d4d,#ff2222);border:none;border-radius:10px;padding:12px 20px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif}
+    .goals-card{background:#ffffff05;border-radius:12px;padding:4px 14px;margin-bottom:16px;border:1px solid #ffffff10}
+    .goal-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #ffffff08}
+    .goal-row:last-child{border-bottom:none}
+    .goal-label{font-size:14px;color:#888}
+    .goal-date-s{font-size:11px;color:#555}
+    .goal-weight{font-size:18px;font-weight:800;color:#ff9f4d}
+    .goal-weight.reached{color:#4dff9f}
+    .weight-history{display:flex;flex-direction:column;gap:8px}
+    .weight-entry{display:flex;justify-content:space-between;align-items:center;background:#ffffff05;border-radius:10px;padding:10px 14px;border:1px solid #ffffff10}
+    .weight-val{font-size:20px;font-weight:800;color:#ff4d4d}
+    .weight-date-label{font-size:12px;color:#666}
+    .wdiff-neg{font-size:14px;font-weight:700;color:#4dff9f}
+    .wdiff-pos{font-size:14px;font-weight:700;color:#ff4d4d}
+    .empty-msg{text-align:center;padding:20px;color:#555;font-size:14px}
+    /* MINI CHART */
+    .chart-wrap{background:#ffffff05;border:1px solid #ffffff10;border-radius:12px;padding:16px;margin-bottom:16px}
+    .chart-title{font-size:11px;color:#666;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+    svg text{font-family:'Barlow Condensed',sans-serif}
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="title">LMP2 Coach</div>
+      <div class="subtitle">Sèche &amp; Performance</div>
+    </div>
+    <div class="badge" id="days-left">-- J</div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="stat-weight">78kg</div><div class="stat-label">Poids actuel</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-sessions">0</div><div class="stat-label">Séances faites</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-progress">0%</div><div class="stat-label">Vers 70kg</div></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('today')">Aujourd'hui</button>
+    <button class="tab-btn" onclick="showTab('program')">Programme</button>
+    <button class="tab-btn" onclick="showTab('weight')">Poids</button>
+  </div>
+</div>
+<div class="content">
+  <div class="tab-content active" id="tab-today"></div>
+  <div class="tab-content" id="tab-program"></div>
+  <div class="tab-content" id="tab-weight"></div>
+</div>
+<script>
+// CONFIG
+const PROGRAM_START = new Date("2026-04-12"); // Dimanche 12 avril
+const GOAL_DATE = new Date("2026-07-31");
+const START_WEIGHT = 78;
+const GOAL_WEIGHT = 70;
+
+// PROGRAMME COMPLET - 11 semaines
+// Types: MUSCU, CARDIO, HIIT, RECUP
+const WEEK_TEMPLATE = [
+  {label:"Dimanche",  type:"MUSCU",  title:"Full Body Force",    exercises:["Développé couché haltères 4×10","Rowing haltère 4×12","Squat haltères 4×15","Curl biceps 3×12","Triceps extension 3×12","Gainage planche 3×45s"]},
+  {label:"Lundi",     type:"HIIT",   title:"HIIT Cardio",         exercises:["Corde à sauter 10×(40s effort/20s repos)","Burpees 5×12","Mountain climbers 4×30s","Course 15 min allure modérée"]},
+  {label:"Mardi",     type:"MUSCU",  title:"Upper Body",          exercises:["Développé incliné haltères 4×10","Élévations latérales élastique 4×15","Rowing haltère 4×12","Curl marteau 3×12","Dips entre chaises 3×15","Abdos crunchs + relevés jambes 4×20"]},
+  {label:"Mercredi",  type:"CARDIO", title:"Cardio Zone 2",       exercises:["VTT 45-60 min zone 2 (tu parles mais tu souffles)","OU Course 40 min allure confortable"]},
+  {label:"Jeudi",     type:"MUSCU",  title:"Lower Body + Core",   exercises:["Squat gobelet haltère 4×15","Fentes marchées haltères 4×12/jambe","Hip thrust haltère 4×15","Mollets debout 4×25","Gainage latéral 3×30s/côté","Abdos bicycle 3×20"]},
+  {label:"Vendredi",  type:"HIIT",   title:"HIIT Explosivité",    exercises:["Corde à sauter 15 min","Sprint 8×30m (récup 90s)","Burpees 4×12","Jumping squats 4×15"]},
+  {label:"Samedi",    type:"RECUP",  title:"Récupération Active", exercises:["VTT balade tranquille 30 min OU marche rapide 40 min","Étirements complets 20 min"]},
+];
+
+// Génère les 77 jours (11 semaines)
+function generateSessions() {
+  const sessions = [];
+  for (let i = 0; i < 77; i++) {
+    const d = new Date(PROGRAM_START);
+    d.setDate(d.getDate() + i);
+    const weekNum = Math.floor(i / 7) + 1;
+    const dayOfWeek = i % 7;
+    const template = WEEK_TEMPLATE[dayOfWeek];
+    sessions.push({
+      idx: i,
+      weekNum,
+      date: new Date(d),
+      dateStr: d.toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long"}),
+      dateShort: d.toLocaleDateString("fr-FR", {day:"2-digit", month:"2-digit"}),
+      ...template
+    });
+  }
+  return sessions;
+}
+const SESSIONS = generateSessions();
+
+const TYPE_LABELS = {MUSCU:"💪 MUSCU", CARDIO:"🚴 CARDIO", HIIT:"⚡ HIIT", RECUP:"😴 RÉCUP"};
+
+const WEIGHT_GOALS = [
+  {date:"12/04/2026", weight:78, label:"Départ 🚦"},
+  {date:"26/04/2026", weight:76.5, label:"Fin semaine 2"},
+  {date:"17/05/2026", weight:75, label:"Mi-parcours"},
+  {date:"14/06/2026", weight:72.5, label:"Objectif juin"},
+  {date:"31/07/2026", weight:70, label:"OBJECTIF FINAL 🏁"},
+];
+
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+
+let completed = load("lmp2_v2_completed", {});
+let weights = load("lmp2_v2_weights", []);
+let expandedDay = null;
+
+function getTodayIdx() {
+  const t = new Date(); t.setHours(0,0,0,0);
+  const s = new Date(PROGRAM_START); s.setHours(0,0,0,0);
+  const d = Math.floor((t - s) / 86400000);
+  return d;
+}
+
+function getDaysLeft() {
+  return Math.max(0, Math.ceil((GOAL_DATE - new Date()) / 86400000));
+}
+
+function getLatestWeight() {
+  return weights.length > 0 ? weights[weights.length-1].value : START_WEIGHT;
+}
+
+function getProgress() {
+  const w = getLatestWeight();
+  return Math.min(100, Math.max(0, ((START_WEIGHT - w) / (START_WEIGHT - GOAL_WEIGHT)) * 100));
+}
+
+function getCompletedCount() {
+  return Object.values(completed).filter(v => v === true).length;
+}
+
+function updateHeader() {
+  document.getElementById("days-left").textContent = getDaysLeft() + "J";
+  document.getElementById("stat-weight").textContent = getLatestWeight() + "kg";
+  document.getElementById("stat-sessions").textContent = getCompletedCount();
+  const p = Math.round(getProgress());
+  document.getElementById("stat-progress").textContent = p + "%";
+  document.getElementById("progress-fill").style.width = p + "%";
+}
+
+function showTab(tab) {
+  document.querySelectorAll(".tab-btn").forEach((b,i) => {
+    b.classList.toggle("active", ["today","program","weight"][i] === tab);
+  });
+  document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+  document.getElementById("tab-" + tab).classList.add("active");
+}
+
+// ---- TODAY ----
+function renderToday() {
+  const idx = getTodayIdx();
+  const el = document.getElementById("tab-today");
+
+  // Avant le programme
+  if (idx < 0) {
+    el.innerHTML = `<div class="alert-card"><div class="alert-title">⏳ Le programme commence le</div><div class="alert-deadline">12 Avril</div><div class="alert-sub">Dimanche — Prépare toi !</div></div>`;
+    return;
+  }
+
+  const daysLeft = getDaysLeft();
+  const w = getLatestWeight();
+  const tolose = (w - GOAL_WEIGHT).toFixed(1);
+
+  // Compte à rebours deadline
+  let alertHtml = `<div class="alert-card"><div class="alert-title">⏱ Deadline 31 Juillet</div><div class="alert-deadline">${daysLeft} jours</div><div class="alert-sub">Il te reste ${tolose}kg à perdre</div></div>`;
+
+  if (idx >= SESSIONS.length) {
+    el.innerHTML = alertHtml + `<div style="text-align:center;padding:40px 20px;color:#555"><div style="font-size:40px;margin-bottom:12px">🏁</div><div style="font-size:18px;font-weight:700">Programme terminé !</div><div style="color:#666;margin-top:8px">Objectif atteint ?</div></div>`;
+    return;
+  }
+
+  const session = SESSIONS[idx];
+  const sk = "day_" + idx;
+  const isDone = !!completed[sk];
+
+  const exItems = session.exercises.map((ex, i) => {
+    const ek = sk + "_ex_" + i;
+    const ed = !!completed[ek];
+    return `<li class="exercise-item ${ed?'done':''}" onclick="toggleEx('${ek}')"><div class="checkbox ${ed?'done':''}">${ed?'✓':''}</div><span>${ex}</span></li>`;
+  }).join("");
+
+  el.innerHTML = alertHtml + `
+    <div class="today-card">
+      <div class="today-header">
+        <div>
+          <div class="today-day-label">Semaine ${session.weekNum} — Jour ${idx+1}</div>
+          <div class="today-date-label">${session.dateStr}</div>
+          <div class="today-title">${session.title}</div>
+        </div>
+        <div class="type-badge type-${session.type}">${TYPE_LABELS[session.type]}</div>
+      </div>
+      <ul class="exercise-list">${exItems}</ul>
+      <button class="done-btn ${isDone?'validated':''}" onclick="toggleSession('${sk}')">${isDone?'✓ Séance validée !':'Valider la séance — 20h'}</button>
+    </div>
+    <div class="reminder-card">
+      <div class="reminder-label">⏰ Routine du jour</div>
+      <div class="reminder-text">
+        🍫 Petit déj : Fromage blanc + whey chocolat + amandes + fruit<br>
+        🎮 Simu : sessions de 2-3h max, pause toutes les heures<br>
+        🍌 Pré-séance 19h30 : 1 banane<br>
+        💪 Séance à 20h00<br>
+        💧 3L d'eau dans la journée
+      </div>
+    </div>`;
+}
+
+function toggleEx(key) {
+  completed[key] = !completed[key];
+  save("lmp2_v2_completed", completed);
+  updateHeader(); renderToday();
+}
+
+function toggleSession(key) {
+  completed[key] = !completed[key];
+  save("lmp2_v2_completed", completed);
+  updateHeader(); renderToday(); renderProgram();
+}
+
+// ---- PROGRAMME ----
+function renderProgram() {
+  const todayIdx = getTodayIdx();
+  const el = document.getElementById("tab-program");
+  let html = "";
+  let currentWeek = 0;
+
+  SESSIONS.forEach((s, i) => {
+    if (s.weekNum !== currentWeek) {
+      currentWeek = s.weekNum;
+      const weekStart = s.dateShort;
+      html += `<div class="week-title">Semaine ${s.weekNum} — à partir du ${weekStart}</div>`;
+    }
+
+    const key = "day_" + i;
+    const done = !!completed[key];
+    const isToday = i === todayIdx;
+    const isFuture = i > todayIdx;
+    const expanded = expandedDay === i;
+    const exHtml = s.exercises.map(ex => `<div class="mini-exercise">• ${ex}</div>`).join("");
+
+    html += `<div class="day-card ${done?'done-day':''} ${isToday?'today-day':''} ${isFuture&&!done?'future':''}" onclick="toggleExpand(${i})">
+      <div class="day-row">
+        <div class="day-left">
+          <div class="day-num">${s.dateShort}</div>
+          <div>
+            <div style="display:flex;align-items:center">
+              <span class="day-title-text">${s.title}</span>
+              ${isToday?'<span class="today-tag">AUJOURD\'HUI</span>':''}
+            </div>
+            <div class="day-meta">${s.label} · ${TYPE_LABELS[s.type]}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;color:#555">${expanded?'▲':'▼'}</span>
+          <div class="check-icon ${done?'done':''}">${done?'✓':''}</div>
+        </div>
+      </div>
+      <div class="day-exercises ${expanded?'open':''}">
+        ${exHtml}
+        <button class="validate-small ${done?'validated':''}" onclick="event.stopPropagation();toggleSession('${key}')">${done?'✓ Validée':'Valider'}</button>
+      </div>
+    </div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+function toggleExpand(i) {
+  expandedDay = expandedDay === i ? null : i;
+  renderProgram();
+}
+
+// ---- POIDS ----
+function renderWeight() {
+  const el = document.getElementById("tab-weight");
+  const lw = getLatestWeight();
+
+  // Mini graphique SVG
+  let chartHtml = "";
+  if (weights.length >= 2) {
+    const allW = weights.map(w => w.value);
+    const minW = Math.min(...allW, GOAL_WEIGHT) - 0.5;
+    const maxW = Math.max(...allW, START_WEIGHT) + 0.5;
+    const W = 300, H = 120, PAD = 20;
+    const xs = weights.map((w, i) => PAD + (i / (weights.length - 1)) * (W - PAD*2));
+    const ys = weights.map(w => PAD + ((maxW - w.value) / (maxW - minW)) * (H - PAD*2));
+    const path = xs.map((x,i) => (i===0?`M${x},${ys[i]}`:`L${x},${ys[i]}`)).join(" ");
+    const goalY = PAD + ((maxW - GOAL_WEIGHT) / (maxW - minW)) * (H - PAD*2);
+    chartHtml = `<div class="chart-wrap">
+      <div class="chart-title">📉 Courbe de poids</div>
+      <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
+        <line x1="${PAD}" y1="${goalY}" x2="${W-PAD}" y2="${goalY}" stroke="#4dff9f" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+        <text x="${W-PAD+2}" y="${goalY+4}" fill="#4dff9f" font-size="9">70kg</text>
+        <path d="${path}" fill="none" stroke="#ff4d4d" stroke-width="2.5" stroke-linejoin="round"/>
+        ${xs.map((x,i)=>`<circle cx="${x}" cy="${ys[i]}" r="4" fill="#ff4d4d"/><text x="${x}" y="${ys[i]-8}" fill="#fff" font-size="9" text-anchor="middle">${weights[i].value}</text>`).join("")}
+      </svg>
+    </div>`;
+  }
+
+  const goalsHtml = WEIGHT_GOALS.map(g => {
+    const reached = lw <= g.weight && g.weight < START_WEIGHT;
+    return `<div class="goal-row">
+      <div><div class="goal-label">${g.label}</div><div class="goal-date-s">${g.date}</div></div>
+      <div class="goal-weight ${reached?'reached':''}">${g.weight} kg ${reached?'✓':''}</div>
+    </div>`;
+  }).join("");
+
+  const histHtml = weights.length === 0
+    ? `<div class="empty-msg">Aucun poids enregistré<br>Entre ton poids chaque matin à jeun</div>`
+    : [...weights].reverse().map((w, i) => {
+        const oi = weights.length - 1 - i;
+        const prev = oi > 0 ? weights[oi-1].value : null;
+        const diff = prev !== null ? w.value - prev : null;
+        const diffHtml = diff !== null ? `<div class="${diff<0?'wdiff-neg':'wdiff-pos'}">${diff>0?'+':''}${diff.toFixed(1)}kg</div>` : '';
+        return `<div class="weight-entry"><div><div class="weight-val">${w.value} kg</div><div class="weight-date-label">${w.date}</div></div>${diffHtml}</div>`;
+      }).join("");
+
+  el.innerHTML = `
+    <div class="section-title">📊 Entrer mon poids (matin à jeun)</div>
+    <div class="weight-input-row">
+      <input class="weight-input" type="number" id="weight-input" placeholder="Ex: 77.5" step="0.1" inputmode="decimal"/>
+      <button class="add-btn" onclick="addWeight()">+ Ajouter</button>
+    </div>
+    ${chartHtml}
+    <div class="section-title">Objectifs intermédiaires</div>
+    <div class="goals-card">${goalsHtml}</div>
+    <div class="section-title">Historique</div>
+    <div class="weight-history">${histHtml}</div>`;
+}
+
+function addWeight() {
+  const input = document.getElementById("weight-input");
+  const val = parseFloat(input.value);
+  if (!val || val < 50 || val > 120) return;
+  weights.push({value: val, date: new Date().toLocaleDateString("fr-FR")});
+  save("lmp2_v2_weights", weights);
+  input.value = "";
+  updateHeader(); renderWeight();
+}
+
+// INIT
+updateHeader(); renderToday(); renderProgram(); renderWeight();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
