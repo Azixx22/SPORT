@@ -168,7 +168,7 @@
 </div>
 <script>
 const PROGRAM_START = new Date("2026-04-12");
-const GOAL_DATE = new Date("2026-07-31");
+const GOAL_DATE = new Date("2026-06-28");
 const START_WEIGHT = 78;
 const GOAL_WEIGHT = 70;
 
@@ -203,7 +203,7 @@ const WEIGHT_GOALS = [
   {date:"26/04/2026", weight:76.5, label:"Fin semaine 2"},
   {date:"17/05/2026", weight:75, label:"Mi-parcours"},
   {date:"14/06/2026", weight:72.5, label:"Objectif juin"},
-  {date:"31/07/2026", weight:70, label:"OBJECTIF FINAL 🏁"},
+  {date:"28/06/2026", weight:70, label:"OBJECTIF FINAL 🏁"},
 ];
 
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}}
@@ -248,7 +248,7 @@ function renderToday(){
   const daysLeft=getDaysLeft();
   const w=getLatestWeight();
   const tolose=(w-GOAL_WEIGHT).toFixed(1);
-  let alertHtml=`<div class="alert-card"><div class="alert-title">⏱ Deadline 31 Juillet</div><div class="alert-deadline">${daysLeft} jours</div><div class="alert-sub">Il te reste ${tolose}kg à perdre</div></div>`;
+  let alertHtml=`<div class="alert-card"><div class="alert-title">⏱ Deadline 28 Juin</div><div class="alert-deadline">${daysLeft} jours</div><div class="alert-sub">Il te reste ${tolose}kg à perdre</div></div>`;
 
   if(idx<0){el.innerHTML=alertHtml+`<div style="text-align:center;padding:40px 20px;color:#555"><div style="font-size:40px">⏳</div><div style="font-size:18px;font-weight:700;margin-top:12px">Démarre le 12 Avril !</div></div>`;return;}
   if(idx>=SESSIONS.length){el.innerHTML=alertHtml+`<div style="text-align:center;padding:40px 20px;color:#555"><div style="font-size:40px">🏁</div><div style="font-size:18px;font-weight:700;margin-top:12px">Programme terminé !</div></div>`;return;}
@@ -273,15 +273,17 @@ function renderToday(){
         <div class="type-badge type-${session.type}">${TYPE_LABELS[session.type]}</div>
       </div>
       <ul class="exercise-list">${exItems}</ul>
-      <button class="done-btn ${isDone?'validated':''}" onclick="toggleSession('${sk}')">${isDone?'✓ Séance validée !':'Valider la séance — 20h'}</button>
+      <button class="done-btn ${isDone?'validated':''}" onclick="toggleSession('${sk}')">${isDone?'✓ Séance validée !':'Valider la séance — 5h30'}</button>
     </div>
     <div class="reminder-card">
       <div class="reminder-label">⏰ Routine du jour</div>
       <div class="reminder-text">
-        🍫 Petit déj : Fromage blanc + whey chocolat + amandes + fruit<br>
+        🍌 Pré-séance 5h00 : 1 banane (à jeun ou presque)<br>
+        💪 Séance 5h30<br>
+        🍫 Petit déj après séance : Fromage blanc + whey + amandes + fruit<br>
         🎮 Simu : max 3h, pause toutes les heures<br>
-        🍌 Pré-séance 19h30 : 1 banane<br>
-        💪 Séance à 20h00<br>
+        💪 Séance à 5h30<br>
+        😴 Au lit à 21h30 — 8h de sommeil<br>
         💧 3L d'eau dans la journée
       </div>
     </div>`;
@@ -342,14 +344,14 @@ function renderNutri(){
     <div class="nutri-header">
       <div class="nutri-title">📊 Objectif journalier</div>
       <div class="macro-row">
-        <div class="macro-card"><div class="macro-num macro-cal">2000</div><div class="macro-label">Kcal</div></div>
-        <div class="macro-card"><div class="macro-num macro-prot">155g</div><div class="macro-label">Protéines</div></div>
-        <div class="macro-card"><div class="macro-num macro-gluc">170g</div><div class="macro-label">Glucides</div></div>
+        <div class="macro-card"><div class="macro-num macro-cal">1800</div><div class="macro-label">Kcal</div></div>
+        <div class="macro-card"><div class="macro-num macro-prot">165g</div><div class="macro-label">Protéines</div></div>
+        <div class="macro-card"><div class="macro-num macro-gluc">145g</div><div class="macro-label">Glucides</div></div>
       </div>
       <div class="macro-row">
-        <div class="macro-card"><div class="macro-num macro-lip">60g</div><div class="macro-label">Lipides</div></div>
+        <div class="macro-card"><div class="macro-num macro-lip">55g</div><div class="macro-label">Lipides</div></div>
         <div class="macro-card"><div class="macro-num" style="color:#4dff9f">3L</div><div class="macro-label">Eau</div></div>
-        <div class="macro-card"><div class="macro-num" style="color:#c97dff">-600</div><div class="macro-label">Déficit</div></div>
+        <div class="macro-card"><div class="macro-num" style="color:#c97dff">-800</div><div class="macro-label">Déficit</div></div>
       </div>
     </div>
 
@@ -408,7 +410,7 @@ function renderNutri(){
       </div>
       <div class="meal-item"><span class="meal-item-name">Viande ou poisson</span><span class="meal-item-qty">150-180g</span></div>
       <div class="meal-item"><span class="meal-item-name">Légumes (poêlés ou vapeur)</span><span class="meal-item-qty">300g</span></div>
-      <div class="meal-item"><span class="meal-item-name">Riz ou patate douce <span style="color:#ff4d4d;font-size:11px">(jours d'entraîn.)</span></span><span class="meal-item-qty">80g cru</span></div>
+      <div class="meal-item"><span class="meal-item-name">Riz ou patate douce <span style="color:#ff4d4d;font-size:11px">(jours d'entraîn.)</span></span><span class="meal-item-qty">60g cru</span></div>
       <div class="meal-item"><span class="meal-item-name">Huile d'olive</span><span class="meal-item-qty">1 cuillère</span></div>
       <div class="meal-macros">
         <div class="meal-macro-item">P: <span>45g</span></div>
@@ -420,7 +422,7 @@ function renderNutri(){
     <!-- COLLATION PRE-SEANCE -->
     <div class="meal-card">
       <div class="meal-header">
-        <div class="meal-title">⚡ Pré-séance 19h30</div>
+        <div class="meal-title">⚡ Pré-séance 5h00</div>
         <div class="meal-kcal">~100 kcal</div>
       </div>
       <div class="meal-item"><span class="meal-item-name">Banane</span><span class="meal-item-qty">1 banane</span></div>
@@ -439,7 +441,7 @@ function renderNutri(){
         🔴 <strong>Zéro jus de fruits</strong> — sucre rapide inutile<br>
         🟡 <strong>Pas de glucides le soir</strong> si jour de repos<br>
         🟢 <strong>Pesée le matin à jeun</strong> après toilettes<br>
-        🟢 <strong>8h de sommeil</strong> = récup + brûle du gras
+        🟢 <strong>Couche toi à 21h30</strong> — 8h pile avant 5h30
       </div>
     </div>`;
 }
