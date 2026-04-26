@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
@@ -136,6 +136,39 @@
     .tip-card{background:linear-gradient(135deg,#1a1500,#1a0a00);border:1px solid #ff9f4d30;border-radius:12px;padding:14px;margin-bottom:12px}
     .tip-title{font-size:11px;color:#ff9f4d;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
     .tip-text{font-size:14px;color:#aaa;line-height:1.6}
+
+    /* CHECKLIST */
+    .check-date{font-size:13px;color:#ff9f4d;font-weight:700;letter-spacing:1px;margin-bottom:16px;text-align:center;text-transform:uppercase}
+    .check-score{background:linear-gradient(135deg,#1a0a0a,#1a1a2a);border:1px solid #ff4d4d40;border-radius:16px;padding:20px;margin-bottom:16px;text-align:center}
+    .check-score-num{font-size:56px;font-weight:800;line-height:1}
+    .check-score-label{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:2px;margin-top:4px}
+    .check-item{display:flex;justify-content:space-between;align-items:center;background:#ffffff05;border:1px solid #ffffff10;border-radius:14px;padding:14px;margin-bottom:10px}
+    .check-item-left{display:flex;align-items:center;gap:12px}
+    .check-item-icon{font-size:24px;flex-shrink:0}
+    .check-item-label{font-size:16px;font-weight:700}
+    .check-item-sub{font-size:11px;color:#666;margin-top:2px}
+    .check-btns{display:flex;gap:6px;flex-shrink:0}
+    .check-toggle{width:40px;height:40px;border-radius:10px;border:2px solid #ffffff20;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;background:#ffffff08;transition:all 0.2s;opacity:0.4}
+    .check-toggle.active-yes{background:#4dff9f20;border-color:#4dff9f;opacity:1}
+    .check-toggle.active-no{background:#ff4d4d20;border-color:#ff4d4d;opacity:1}
+    /* SUIVI */
+    .suivi-week{margin-bottom:20px}
+    .suivi-week-title{font-size:15px;font-weight:800;color:#ff9f4d;text-transform:uppercase;letter-spacing:1px;padding:8px 0;border-bottom:1px solid #ff9f4d30;margin-bottom:8px}
+    .suivi-day{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#ffffff05;border:1px solid #ffffff10;border-radius:10px;margin-bottom:6px}
+    .suivi-day.today-suivi{background:#ff4d4d10;border-color:#ff4d4d50}
+    .suivi-day-name{font-size:15px;font-weight:700;text-transform:capitalize}
+    .suivi-day-date{font-size:11px;color:#666;margin-top:1px}
+    .suivi-right{display:flex;align-items:center;gap:8px}
+    .suivi-dots{display:flex;gap:3px}
+    .suivi-dot{width:9px;height:9px;border-radius:50%}
+    .suivi-dot.d{background:#4dff9f}
+    .suivi-dot.f{background:#ff4d4d}
+    .suivi-dot.e{background:#ffffff15}
+    .suivi-badge{font-size:14px;font-weight:800;padding:3px 10px;border-radius:8px;min-width:36px;text-align:center}
+    .s-full{background:#4dff9f20;color:#4dff9f;border:1px solid #4dff9f40}
+    .s-good{background:#ff9f4d20;color:#ff9f4d;border:1px solid #ff9f4d40}
+    .s-bad{background:#ff4d4d20;color:#ff4d4d;border:1px solid #ff4d4d40}
+    .s-empty{background:#ffffff08;color:#444;border:1px solid #ffffff10}
   </style>
 </head>
 <body>
@@ -157,6 +190,8 @@
     <button class="tab-btn active" onclick="showTab('today')">Aujourd'hui</button>
     <button class="tab-btn" onclick="showTab('program')">Programme</button>
     <button class="tab-btn" onclick="showTab('nutri')">Nutrition</button>
+    <button class="tab-btn" onclick="showTab('checklist')">Check ✅</button>
+    <button class="tab-btn" onclick="showTab('suivi')">Suivi</button>
     <button class="tab-btn" onclick="showTab('weight')">Poids</button>
   </div>
 </div>
@@ -164,10 +199,12 @@
   <div class="tab-content active" id="tab-today"></div>
   <div class="tab-content" id="tab-program"></div>
   <div class="tab-content" id="tab-nutri"></div>
+  <div class="tab-content" id="tab-checklist"></div>
+  <div class="tab-content" id="tab-suivi"></div>
   <div class="tab-content" id="tab-weight"></div>
 </div>
 <script>
-const PROGRAM_START = new Date("2026-04-12");
+const PROGRAM_START = new Date("2026-04-19");
 const GOAL_DATE = new Date("2026-06-28");
 const START_WEIGHT = 78;
 const GOAL_WEIGHT = 70;
@@ -176,10 +213,10 @@ const WEEK_TEMPLATE = [
   {label:"Dimanche", type:"MUSCU", title:"Full Body Force", exercises:["Développé couché haltères 4×10","Rowing haltère 4×12","Squat haltères 4×15","Curl biceps 3×12","Triceps extension 3×12","Gainage planche 3×45s"]},
   {label:"Lundi", type:"HIIT", title:"HIIT Cardio", exercises:["Corde à sauter 10×(40s effort/20s repos)","Burpees 5×12","Mountain climbers 4×30s","Course 15 min allure modérée"]},
   {label:"Mardi", type:"MUSCU", title:"Upper Body", exercises:["Développé incliné haltères 4×10","Élévations latérales élastique 4×15","Rowing haltère 4×12","Curl marteau 3×12","Dips entre chaises 3×15","Abdos crunchs + relevés jambes 4×20"]},
-  {label:"Mercredi", type:"CARDIO", title:"Cardio Zone 2", exercises:["VTT 45-60 min zone 2 (tu parles mais tu souffles)","OU Course 40 min allure confortable"]},
-  {label:"Jeudi", type:"MUSCU", title:"Lower Body + Core", exercises:["Squat gobelet haltère 4×15","Fentes marchées haltères 4×12/jambe","Hip thrust haltère 4×15","Mollets debout 4×25","Gainage latéral 3×30s/côté","Abdos bicycle 3×20"]},
-  {label:"Vendredi", type:"HIIT", title:"HIIT Explosivité", exercises:["Corde à sauter 15 min","Sprint 8×30m (récup 90s)","Burpees 4×12","Jumping squats 4×15"]},
-  {label:"Samedi", type:"RECUP", title:"Récupération Active", exercises:["VTT balade tranquille 30 min OU marche rapide 40 min","Étirements complets 20 min"]},
+  {label:"Mercredi", type:"MUSCU", title:"Lower Body + Fessiers 🍑", exercises:["Hip thrust haltère 4×20 — FESSIERS","Fentes latérales haltères 4×12/jambe — FESSIERS","Squat sumo haltère 4×15 — FESSIERS + INTÉRIEUR CUISSES","Abducteurs élastique debout 4×20/jambe — FESSIERS CÔTÉ","Leg curl élastique allongé 4×15 — ISCHIO","Donkey kicks élastique 4×20/jambe — FESSIERS"]},
+  {label:"Jeudi", type:"CARDIO", title:"Cardio Zone 2", exercises:["VTT 45-60 min zone 2 (tu parles mais tu souffles)","OU Course 40 min allure confortable"]},
+  {label:"Vendredi", type:"MUSCU", title:"Lower Body + Core", exercises:["Squat gobelet haltère 4×15","Fentes marchées haltères 4×12/jambe","Hip thrust haltère unilatéral 4×12/jambe","Mollets debout 4×25","Gainage latéral 3×30s/côté","Abdos bicycle 3×20"]},
+  {label:"Samedi", type:"RECUP", title:"Repos Total 😴", exercises:["Pas de séance aujourd'hui — ton corps récupère et brûle du gras","Marche légère 20 min si tu veux bouger","Étirements doux 15 min","Dors bien, mange propre, hydrate toi"]},
 ];
 
 function generateSessions() {
@@ -235,7 +272,7 @@ function updateHeader(){
 
 function showTab(tab){
   document.querySelectorAll(".tab-btn").forEach((b,i)=>{
-    b.classList.toggle("active",["today","program","nutri","weight"][i]===tab);
+    b.classList.toggle("active",["today","program","nutri","checklist","suivi","weight"][i]===tab);
   });
   document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
   document.getElementById("tab-"+tab).classList.add("active");
@@ -519,8 +556,134 @@ function addWeight(){
   updateHeader();renderWeight();
 }
 
+
+// ---- CHECKLIST ----
+const CL_ITEMS = [
+  {id:"breakfast", icon:"🍫", label:"Petit déjeuner respecté", sub:"Fromage blanc + whey + amandes + fruit"},
+  {id:"water",     icon:"💧", label:"Eau 3L atteint",          sub:"3 litres minimum dans la journée"},
+  {id:"sport",     icon:"💪", label:"Sport effectué",           sub:"Séance complète à 18h"},
+  {id:"meals",     icon:"🥗", label:"Repas midi et soir propres", sub:"Protéines + légumes + féculents contrôlés"},
+  {id:"simu",      icon:"🎮", label:"Simu minimum 2h",          sub:"Au moins 2h de simulateur aujourd'hui"},
+];
+
+function todayKey(){return "cl_"+new Date().toDateString();}
+
+function renderChecklist(){
+  const el=document.getElementById("tab-checklist");
+  const k=todayKey();
+  let checks=load(k,{});
+  const done=CL_ITEMS.filter(it=>checks[it.id]===true).length;
+  const total=CL_ITEMS.length;
+  const scoreColor=done===total?"#4dff9f":done>=3?"#ff9f4d":"#ff4d4d";
+  const today=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+  const msg=done===total?"🔥 Journée parfaite !":done>=3?"💪 Bonne journée !":"⚡ Tu peux faire mieux !";
+
+  const items=CL_ITEMS.map(item=>{
+    const v=checks[item.id];
+    return `<div class="check-item">
+      <div class="check-item-left">
+        <div class="check-item-icon">${item.icon}</div>
+        <div>
+          <div class="check-item-label">${item.label}</div>
+          <div class="check-item-sub">${item.sub}</div>
+        </div>
+      </div>
+      <div class="check-btns">
+        <button class="check-toggle ${v===true?'active-yes':''}" onclick="setCheck('${item.id}',true)">✅</button>
+        <button class="check-toggle ${v===false?'active-no':''}" onclick="setCheck('${item.id}',false)">❌</button>
+      </div>
+    </div>`;
+  }).join("");
+
+  el.innerHTML=`
+    <div class="check-date">📅 ${today}</div>
+    <div class="check-score">
+      <div class="check-score-num" style="color:${scoreColor}">${done}/${total}</div>
+      <div class="check-score-label">tâches accomplies</div>
+      <div style="font-size:18px;margin-top:8px">${msg}</div>
+    </div>
+    ${items}`;
+}
+
+function setCheck(id,val){
+  const k=todayKey();
+  let checks=load(k,{});
+  if(checks[id]===val) delete checks[id];
+  else checks[id]=val;
+  save(k,checks);
+  renderChecklist();
+  renderSuivi();
+}
+
+// ---- SUIVI ----
+function dayScore(d){
+  const checks=load("cl_"+d.toDateString(),null);
+  if(!checks||Object.keys(checks).length===0)return null;
+  const done=CL_ITEMS.filter(it=>checks[it.id]===true).length;
+  return {done, total:CL_ITEMS.length, checks};
+}
+
+function renderSuivi(){
+  const el=document.getElementById("tab-suivi");
+  const todayIdx=getTodayIdx();
+  let html="";
+  let curWeek=0;
+
+  for(let i=0;i<70;i++){
+    const d=new Date(PROGRAM_START);
+    d.setDate(d.getDate()+i);
+    const wk=Math.floor(i/7)+1;
+    const isToday=i===todayIdx;
+    const isFuture=i>todayIdx;
+
+    if(wk!==curWeek){
+      if(curWeek!==0)html+='</div>';
+      curWeek=wk;
+      // Week total
+      let wDone=0,wTot=0;
+      for(let j=i;j<Math.min(i+7,70);j++){
+        const wd=new Date(PROGRAM_START);wd.setDate(wd.getDate()+j);
+        const sc=dayScore(wd);
+        if(sc){wDone+=sc.done;wTot+=sc.total;}
+      }
+      const wPct=wTot>0?" — "+Math.round((wDone/wTot)*100)+"%":"";
+      html+=`<div class="suivi-week"><div class="suivi-week-title">Semaine ${wk}${wPct}</div>`;
+    }
+
+    const name=d.toLocaleDateString("fr-FR",{weekday:"long"});
+    const date=d.toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit"});
+    const sc=dayScore(d);
+
+    let badge,dots;
+    if(isFuture&&!isToday){
+      badge=`<div class="suivi-badge s-empty">--</div>`;
+      dots=CL_ITEMS.map(()=>'<div class="suivi-dot e"></div>').join("");
+    } else if(!sc){
+      badge=`<div class="suivi-badge s-empty">${isToday?'…':'0/5'}</div>`;
+      dots=CL_ITEMS.map(()=>`<div class="suivi-dot e"></div>`).join("");
+    } else {
+      const cls=sc.done===sc.total?'s-full':sc.done>=3?'s-good':'s-bad';
+      badge=`<div class="suivi-badge ${cls}">${sc.done}/5</div>`;
+      dots=CL_ITEMS.map(it=>`<div class="suivi-dot ${sc.checks[it.id]===true?'d':'f'}"></div>`).join("");
+    }
+
+    html+=`<div class="suivi-day ${isToday?'today-suivi':''}">
+      <div>
+        <div class="suivi-day-name">${name}${isToday?' 👈':''}</div>
+        <div class="suivi-day-date">${date}</div>
+      </div>
+      <div class="suivi-right">
+        <div class="suivi-dots">${dots}</div>
+        ${badge}
+      </div>
+    </div>`;
+  }
+  html+='</div>';
+  el.innerHTML=html;
+}
+
 // INIT
-updateHeader();renderToday();renderProgram();renderNutri();renderWeight();
+updateHeader();renderToday();renderProgram();renderNutri();renderChecklist();renderSuivi();renderWeight();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
 </body>
